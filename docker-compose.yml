@@ -1,0 +1,38 @@
+version: '3.8'
+
+networks:
+  spring-http-client-demo:
+    name: spring-http-client-demo
+    driver: bridge
+
+services:
+
+  todo-service:
+    build: ./todo-service
+    image: todo-service
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8080/actuator/health | grep UP || exit 1"
+      interval: 30s
+      timeout: 5s
+    restart: always
+    networks:
+      - spring-http-client-demo
+    ports:
+      - "8080:8080"
+
+  todo-client:
+    build: ./todo-client
+    image: todo-client
+    environment:
+      - TODO_CLIENT_TODO_SERVICE_BASE_URL=http://todo-service:8080
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8081/actuator/health | grep UP || exit 1"
+      interval: 30s
+      timeout: 5s
+    restart: always
+    networks:
+      - spring-http-client-demo
+    ports:
+      - "8081:8081"
+    depends_on:
+      - todo-service
