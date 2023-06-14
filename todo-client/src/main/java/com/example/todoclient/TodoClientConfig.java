@@ -17,6 +17,7 @@ public class TodoClientConfig {
     WebClient webClient(WebClient.Builder builder) {
         return builder
                 .baseUrl(todoServiceBaseUrl)
+                .defaultHeader("X-CUSTOM-HEADER", "HEADER-VALUE")
                 .build();
     }
 
